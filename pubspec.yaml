@@ -1,0 +1,59 @@
+name: fruktik
+description: A new Flutter project.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  provider: ^6.1.5+1
+  google_fonts: ^7.0.2
+  
+  # Animations & Visual Effects
+  flutter_animate: ^4.5.2
+  crypto: ^3.0.3
+  web3dart: ^2.6.1 # For io.net attestation signature verification11
+  animations: ^2.0.11
+  shimmer: ^3.0.0
+  lottie: ^3.1.3
+  
+  # Phase 2: Sensors & Images
+  sensors_plus: ^5.0.1
+  cached_network_image: ^3.4.1
+  confetti: ^0.7.0
+  local_auth: ^2.2.0
+  shared_preferences: ^2.3.5
+  supabase_flutter: ^2.12.0
+  uuid: ^4.5.2
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  equatable: ^2.0.5
+  camera: ^0.11.3
+  permission_handler: ^12.0.1
+  http: ^1.6.0
+  flutter_image_compress: ^2.1.0
+  path_provider: ^2.1.5
+
+  intl: any
+  google_generative_ai: ^0.4.7
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/ml/
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icons/app_icon.png"
+  min_sdk_android: 21

@@ -1,0 +1,287 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fruktik-ai",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "edb9cf3c-4b13-45bd-980a-4bd0c56dc083",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        944
+      ],
+      "webhookId": "dbe1b07e-8d86-4555-860a-bcda3c5eb6d5"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.body.action}}",
+                    "rightValue": "chat",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "singleValue": true
+                    },
+                    "id": "81431ccd-2b21-4a58-b62b-4de2a8d8e2d6"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Chat Mode"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.body.action}}",
+                    "rightValue": "ocr",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "singleValue": true
+                    },
+                    "id": "d95f2b63-2afa-4c17-a6be-f15ae233a53b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Image OCR Mode"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fd70473b-9088-4f7a-9407-df9bc36e6a4c",
+      "name": "Switch Action",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        304,
+        944
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.all()[0].json.body;\nconst query = body.query || 'Привет';\nconst ctx = body.context || {};\nconst goals = ctx.goals || {};\nconst consumed = ctx.consumed_today || {};\nconst meals = ctx.today_meals || [];\n\nconst goalsCalories = goals.calories || 'неизвестно';\nconst goalsProteins = goals.proteins || 'неизвестно';\nconst goalsFats = goals.fats || 'неизвестно';\nconst goalsCarbs = goals.carbs || 'неизвестно';\n\nconst consumedCalories = consumed.calories || 0;\nconst consumedProteins = consumed.proteins || 0;\nconst consumedFats = consumed.fats || 0;\nconst consumedCarbs = consumed.carbs || 0;\n\nconst mealsStr = meals.length > 0 ? JSON.stringify(meals) : 'пусто (пользователь ещё ничего не записал)';\n\nconst prompt = `Ты - нутрициолог-ассистент приложения FRUktik.\n\nЗапрос пользователя: ${query}\n\nДанные дневника пользователя на сегодня (получены автоматически из приложения):\n- Цель КБЖУ: ${goalsCalories} ккал, Б: ${goalsProteins} г, Ж: ${goalsFats} г, У: ${goalsCarbs} г\n- Уже съедено: ${consumedCalories} ккал, Б: ${consumedProteins} г, Ж: ${consumedFats} г, У: ${consumedCarbs} г\n- Список съеденного: ${mealsStr}\n\nСТРОГИЕ ПРАВИЛА:\n1. Отвечай ТОЛЬКО на русском, кратко и по делу.\n2. Данные дневника уже предоставлены выше — НИКОГДА не проси пользователя что-то прислать, написать или рассказать про свое питание. Ты УЖЕ все знаешь.\n3. Если дневник пуст, мягко напомни записать приём пищи.\n4. НЕ здоровайся. НЕ представляйся. Сразу отвечай по существу вопроса.\n5. Пиши простым текстом без markdown, без звёздочек, без решёток.`;\n\nreturn [{ json: { prompt } }];"
+      },
+      "id": "74f52b76-004a-4d27-b35b-086ef0657bdd",
+      "name": "Build Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        848
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\ntry {\n  const response = items[0].json;\n  const text = response.content.parts[0].text;\n  return [{ json: { reply: text, success: true } }];\n} catch (e) {\n  return [{ json: { reply: 'Ошибка при обработке ответа ИИ: ' + e.message, success: false } }];\n}"
+      },
+      "id": "a0a5b519-1dd5-4b5c-abee-4d953327641e",
+      "name": "Format Chat Reply",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        848
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "for (const item of $input.all()) {\n  const base64Str = item.json.body.image_base64;\n  if (base64Str) {\n    item.binary = {\n      data: {\n        data: base64Str,\n        mimeType: item.json.body.mime_type || 'image/jpeg',\n        fileName: 'image.jpg'\n      }\n    };\n  }\n}\nreturn $input.all();"
+      },
+      "id": "75c1c4f9-244a-43fb-a1ef-4c263608d223",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-1.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-1.5-flash"
+        },
+        "text": "Распознай все продукты питания на этом изображении и оцени их пищевую ценность на 100 грамм продукта. Верни ТОЛЬКО валидный JSON массив объектов с ключами: name (название), calories (ккал), proteins (белки г), fats (жиры г), carbs (углеводы г). Пример: [{\"name\": \"Банан\", \"calories\": 89, \"proteins\": 1.1, \"fats\": 0.3, \"carbs\": 22.8}]. И абсолютно ничего больше. Без разметки markdown, без ```json. Если еды нет, верни [].",
+        "inputType": "binary",
+        "options": {
+          "maxOutputTokens": 2048
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        816,
+        1040
+      ],
+      "id": "6df38d91-f2e4-4108-a41a-f1fcd44eabf9",
+      "name": "Analyze an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "oeDyAZkY9Fg3V6Dh",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\ntry {\n  const text = items[0].json.content.parts[0].text;\n  const jsonStrMatch = text.match(/\\[[\\s\\S]*\\]/);\n  const jsonStr = jsonStrMatch ? jsonStrMatch[0] : text;\n  const parsed = JSON.parse(jsonStr);\n  return parsed.map(item => ({ json: item }));\n} catch (e) {\n  return [{ json: { error: 'Failed to parse JSON' } }];\n}"
+      },
+      "id": "45c71791-9b8a-444b-a0d6-c149a537cd82",
+      "name": "Extract JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemma-3n-e2b-it",
+          "mode": "list",
+          "cachedResultName": "models/gemma-3n-e2b-it"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.prompt }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "maxOutputTokens": 2048,
+          "temperature": 0.5
+        }
+      },
+      "id": "988776a4-8e7e-4cf1-aa55-357200785061",
+      "name": "Gemini Chat",
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        752,
+        848
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "oeDyAZkY9Fg3V6Dh",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Action": {
+      "main": [
+        [
+          {
+            "node": "Build Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Prompt": {
+      "main": [
+        [
+          {
+            "node": "Gemini Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Analyze an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze an image": {
+      "main": [
+        [
+          {
+            "node": "Extract JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Chat": {
+      "main": [
+        [
+          {
+            "node": "Format Chat Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6a3a9b9f18231c0fa69e16958ce95ec9cb4a8d1591f02efccc87def9f6b825bd"
+  }
+}
