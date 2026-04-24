@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Бизнес-процессы FRUktik</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; color: #222; }
+  h1 { text-align: center; font-size: 22px; margin-bottom: 30px; color: #1a1a2e; }
+  h2 { font-size: 16px; background: #d0e8ff; border-left: 5px solid #2563eb; padding: 8px 14px; margin: 0 0 0 0; }
+  h3 { font-size: 13px; color: #555; margin: 10px 0 6px 0; }
+
+  /* ---- SWIM LANE TABLE ---- */
+  .bpmn-wrapper { background: #fff; border: 1.5px solid #aaa; margin-bottom: 40px; overflow-x: auto; }
+  .bpmn-title { font-size: 14px; font-weight: bold; background: #e0f0ff; padding: 6px 12px; border-bottom: 1px solid #ccc; }
+  table.swimlane { border-collapse: collapse; width: 100%; min-width: 760px; }
+  table.swimlane td { border: 1px solid #ccc; vertical-align: middle; padding: 0; }
+  .lane-label { writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-weight: bold; font-size: 12px; background: #eaf3ff; width: 36px; min-width: 36px; padding: 10px 4px; border-right: 2px solid #aac; white-space: nowrap; }
+  .lane-body { padding: 14px 12px; }
+
+  /* ---- FLOW ELEMENTS ---- */
+  .flow { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+  .event-start { width: 30px; height: 30px; border-radius: 50%; border: 3px solid #22c55e; background: #dcfce7; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; }
+  .event-end { width: 30px; height: 30px; border-radius: 50%; border: 4px solid #ef4444; background: #fee2e2; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; }
+  .gateway { width: 32px; height: 32px; background: #fef9c3; border: 2px solid #ca8a04; transform: rotate(45deg); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .gateway span { transform: rotate(-45deg); font-size: 14px; font-weight: bold; color: #854d0e; }
+  .task { background: #dbeafe; border: 1.5px solid #3b82f6; border-radius: 6px; padding: 5px 9px; font-size: 11px; text-align: center; max-width: 130px; min-width: 80px; }
+  .task.green { background: #dcfce7; border-color: #16a34a; }
+  .task.orange { background: #ffedd5; border-color: #ea580c; }
+  .task.purple { background: #ede9fe; border-color: #7c3aed; }
+  .arr { color: #555; font-size: 16px; line-height: 1; flex-shrink: 0; }
+  .arr-down { color: #555; font-size: 16px; display: block; text-align: center; margin: 4px 0; }
+  .doc { border: 1px dashed #777; border-radius: 3px; padding: 3px 7px; font-size: 10px; background: #fafafa; font-style: italic; }
+  .note { font-size: 10px; color: #666; margin-top: 4px; }
+
+  /* ---- DECOMPOSITION ---- */
+  .decomp-wrapper { background: #fff; border: 1.5px solid #aaa; margin-bottom: 40px; padding: 16px; }
+  .level-box { border: 2px solid #ca8a04; background: #fffce8; border-radius: 6px; padding: 12px; margin-bottom: 10px; }
+  .level-title { font-weight: bold; font-size: 12px; color: #854d0e; margin-bottom: 8px; }
+  .level-flow { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .ltask { background: #dbeafe; border: 1.5px solid #3b82f6; border-radius: 5px; padding: 4px 10px; font-size: 11px; text-align: center; }
+  .ltask.active { background: #bbf7d0; border-color: #16a34a; font-weight: bold; }
+  .decomp-arrow { font-size: 11px; color: #999; display: block; text-align: center; margin: 2px 0; border-left: 1px dashed #aaa; margin-left: 20px; padding-left: 8px; }
+
+  @media print { body { background: #fff; } }
+</style>
+</head>
+<body>
+<h1>Схемы бизнес-процессов мобильного приложения «FRUktik»</h1>
+
+<!-- ================================================================ -->
+<!--  ЭТАП 2: Swim-lane диаграммы                                      -->
+<!-- ================================================================ -->
+
+<h2>Этап 2. Swim-lane диаграммы бизнес-процессов</h2>
+
+<!-- ===== БП-1: РЕГИСТРАЦИЯ И АВТОРИЗАЦИЯ ===== -->
+<div class="bpmn-wrapper" style="margin-top:16px">
+  <div class="bpmn-title">БП-1: Регистрация и авторизация пользователя</div>
+  <table class="swimlane">
+    <tr>
+      <td class="lane-label">Пользователь</td>
+      <td class="lane-body">
+        <div class="flow">
+          <div class="event-start" title="Старт">●</div>
+          <span class="arr">→</span>
+          <div class="task">Открыть приложение</div>
+          <span class="arr">→</span>
+          <div class="gateway"><span>X</span></div>
+          <span class="arr">→</span>
+          <div class="task">Ввести email и пароль</div>
+          <span class="arr">→</span>
+          <div class="task">Нажать «Войти»</div>
+        </div>
+        <div class="note" style="margin-top:6px">⤷ Новый пользователь: заполнить форму регистрации → ввести профиль (вес, рост, цель) → подтвердить email</div>
+      </td>
+    </tr>
+    <tr>
+      <td class="lane-label">Система (Backend)</td>
+      <td class="lane-body">
+        <div class="flow">
+          <div class="task green">Валидация данных</div>
+          <span class="arr">→</span>
+          <div class="gateway"><span>X</span></div>
+          <span class="arr">→</span>
+          <div class="task green">Создать/проверить аккаунт в БД</div>
+          <span class="arr">→</span>
+          <div class="task green">Выдать JWT-токен</div>
+          <span class="arr">→</span>
+          <div class="task green">Загрузить профиль</div>
+          <span class="arr">→</span>
+          <div class="event-end" title="Конец">●</div>
+        </div>
+        <div class="note">⤷ Ошибка валидации: вернуть сообщение об ошибке → пользователь исправляет данные</div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- ===== БП-2: РАСПОЗНАВАНИЕ ЕДЫ ===== -->
+<div class="bpmn-wrapper">
+  <div class="bpmn-title">БП-2: Распознавание еды по фотографии</div>
+  <table class="swimlane">
+    <tr>
+      <td class="lane-label">Пользователь</td>
+      <td class="lane-body">
+        <div class="flow">
+          <div class="event-start">●</div>
+          <span class="arr">→</span>
+          <div class="task">Нажать «Добавить блюдо»</div>
+          <span class="arr">→</span>
+          <div class="gateway"><span>X</span></div>
+          <span class="arr">→</span>
+          <div class="task">Сфотогра-фировать блюдо</div>
+          <span class="arr">→</span>
+          <div class="task">Отправить фото на анализ</div>
+          <span class="arr">→</span>
+          <div class="task">Проверить и скор-ректировать результат</div>
+          <span class="arr">→</span>
+          <div class="task">Подтвердить добавление</div>
+          <span class="arr">→</span>
+          <div class="event-end">●</div>
+        </div>
+        <div class="note">⤷ Альтернатива шлюза: выбрать из галереи</div>
+      </td>
+    </tr>
+    <tr>
+      <td class="lane-label">AI-модуль (n8n + Mistral)</td>
+      <td class="lane-body">
+        <div class="flow">
+          <div class="task orange">Получить изображение</div>
+          <span class="arr">→</span>
+          <div class="task orange">Сегментировать продукты (LLM Vision)</div>
+          <span class="arr">→</span>
+          <div class="task orange">Оценить вес порций</div>
+          <span class="arr">→</span>
+          <div class="task orange">Сопоставить с нутриент. БД</div>
+          <span class="arr">→</span>
+          <div class="task orange">Вернуть JSON с КБЖУ</div>
+        </div>
+        <div class="note">⤷ При низкой уверенности модели: пометить продукт как «требует уточнения»</div>
+      </td>
+    </tr>
+    <tr>
+      <td class="lane-label">Backend</td>
+      <td class="lane-body">
+        <div class="flow">
+          <div class="task green">Принять фото (REST API)</div>
+          <span class="arr">→</span>
+          <div class="task green">Переслать в n8n-workflow</div>
+          <span class="arr">→</span>
+          <div class="task green">Кэшировать результат</div>
+          <span class="arr">→</span>
+          <div class="task green">Вернуть ответ клиенту</div>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- ===== БП-3: ВЕДЕНИЕ ДНЕВНИКА ===== -->
+<div class="bpmn-wrapper">
+  <div class="bpmn-title">БП-3: Ведение дневника питания</div>
+  <table class="swimlane">
+    <tr>
+      <td class="lane-label">Пользователь</td>
+      <td class="lane-body">
+        <div class="flow">
+          <div class="event-start">●</div>
+          <span class="arr">→</span>
+          <div class="task">Открыть вкладку «Дневник»</div>
+          <span class="arr">→</span>
+          <div class="gateway"><span>X</span></div>
+          <span class="arr">→</span>
+          <div class="task">Добавить прием пищи (см. БП-2)</div>
+          <span class="arr">→</span>
+          <div class="task">Выбрать тип приема (завтрак/обед/…)</div>
+          <span class="arr">→</span>
+          <div class="task">Сохранить запись</div>
+          <span class="arr">→</span>
+          <div class="event-end">●</div>
+        </div>
+        <div class="note">⤷ Шлюз: удалить / отредактировать существующую запись</div>
+      </td>
+    </tr>
+    <tr>
+      <td class="lane-label">Мобильное приложение</td>
+      <td class="lane-body">
+        <div class="flow">
+          <div class="task purple">Отобразить список за день</div>
+          <span class="arr">→</span>
+          <div class="task purple">Показать суммарный КБЖУ</div>
+          <span class="arr">→</span>
+          <div class="task purple">Сохранить в SQLite (локально)</div>
+          <span class="arr">→</span>
+          <div class="task purple">Синхронизировать с PostgreSQL</div>
+        </div>
+        <div class="note">⤷ Офлайн: сохранить в SQLite, синхронизировать при восстановлении сети</div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- ===== БП-4: СТАТИСТИКА КБЖУ ===== -->
+<div class="bpmn-wrapper">
+  <div class="bpmn-title">БП-4: Просмотр статистики КБЖУ</div>
+  <table class="swimlane">
+    <tr>
+      <td class="lane-label">Пользователь</td>
+      <td class="lane-body">
+        <div class="flow">
+          <div class="event-start">●</div>
+          <span class="arr">→</span>
+          <div class="task">Открыть раздел «Статистика»</div>
+          <span class="arr">→</span>
+          <div class="task">Выбрать период (день/неделя/месяц)</div>
+          <span class="arr">→</span>
+          <div class="task">Просмотреть графики КБЖУ</div>
+          <span class="arr">→</span>
+          <div class="gateway"><span>X</span></div>
+          <span class="arr">→</span>
+          <div class="task">Экспортировать данные (необязательно)</div>
+          <span class="arr">→</span>
+          <div class="event-end">●</div>
+        </div>
+        <div class="note">⤷ Шлюз: закрыть раздел или изменить период</div>
+      </td>
+    </tr>
+    <tr>
+      <td class="lane-label">Система</td>
+      <td class="lane-body">
+        <div class="flow">
+          <div class="task green">Запрос агрегированных данных из БД</div>
+          <span class="arr">→</span>
+          <div class="task green">Рассчитать дефицит/профицит калорий</div>
+          <span class="arr">→</span>
+          <div class="task green">Сформировать данные для графиков</div>
+          <span class="arr">→</span>
+          <div class="task green">Отрисовать графики (Flutter Charts)</div>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- ===== БП-5: ИИ-АССИСТЕНТ ===== -->
+<div class="bpmn-wrapper">
+  <div class="bpmn-title">БП-5: Общение с ИИ-ассистентом</div>
+  <table class="swimlane">
+    <tr>
+      <td class="lane-label">Пользователь</td>
+      <td class="lane-body">
+        <div class="flow">
+          <div class="event-start">●</div>
+          <span class="arr">→</span>
+          <div class="task">Открыть чат «Ассистент»</div>
+          <span class="arr">→</span>
+          <div class="task">Написать вопрос о питании</div>
+          <span class="arr">→</span>
+          <div class="task">Отправить запрос</div>
+          <span class="arr">→</span>
+          <div class="task">Прочитать ответ ассистента</div>
+          <span class="arr">→</span>
+          <div class="gateway"><span>X</span></div>
+          <span class="arr">→</span>
+          <div class="event-end">●</div>
+        </div>
+        <div class="note">⤷ Шлюз: задать уточняющий вопрос или завершить диалог</div>
+      </td>
+    </tr>
+    <tr>
+      <td class="lane-label">LLM (Mistral/OpenRouter)</td>
+      <td class="lane-body">
+        <div class="flow">
+          <div class="task orange">Принять контекст (история дневника)</div>
+          <span class="arr">→</span>
+          <div class="task orange">Сформировать системный промпт</div>
+          <span class="arr">→</span>
+          <div class="task orange">Сгенерировать персонализированный ответ</div>
+          <span class="arr">→</span>
+          <div class="task orange">Вернуть рекомендации</div>
+        </div>
+        <div class="note">⤷ Контекст включает: цели пользователя, последние записи дневника, КБЖУ за неделю</div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+
+<!-- ================================================================ -->
+<!--  ЭТАП 3: Схемы декомпозиции                                       -->
+<!-- ================================================================ -->
+
+<h2 style="margin-top:30px">Этап 3. Схемы разветвлений (декомпозиция) бизнес-процессов</h2>
+
+<!-- ===== БП-1 ДЕКОМПОЗИЦИЯ ===== -->
+<div class="decomp-wrapper" style="margin-top:16px">
+  <h3>БП-1: Авторизация — уровни декомпозиции</h3>
+
+  <div class="level-box">
+    <div class="level-title">Уровень 1 — Верхний (контекстный)</div>
+    <div class="level-flow">
+      <div class="event-start">●</div>
+      <span class="arr">→</span>
+      <div class="ltask">БП-1: Регистрация / Авторизация</div>
+      <span class="arr">→</span>
+      <div class="event-end">●</div>
+    </div>
+  </div>
+
+  <div class="decomp-arrow">↓ декомпозиция</div>
+
+  <div class="level-box">
+    <div class="level-title">Уровень 2 — Основные подпроцессы</div>
+    <div class="level-flow">
+      <div class="ltask">1.1 Выбор режима входа</div>
+      <span class="arr">→</span>
+      <div class="ltask active">1.2 Регистрация нового пользователя</div>
+      <span class="arr">→</span>
+      <div class="ltask">1.3 Вход существующего пользователя</div>
+      <span class="arr">→</span>
+      <div class="ltask">1.4 Управление профилем</div>
+    </div>
+  </div>
+
+  <div class="decomp-arrow">↓ декомпозиция 1.2</div>
+
+  <div class="level-box">
+    <div class="level-title">Уровень 3 — Детализация «Регистрация нового пользователя»</div>
+    <div class="level-flow">
+      <div class="ltask">1.2.1 Ввод email и пароля</div>
+      <span class="arr">→</span>
+      <div class="ltask">1.2.2 Валидация формата email</div>
+      <span class="arr">→</span>
+      <div class="ltask">1.2.3 Проверка уникальности email в БД</div>
+      <span class="arr">→</span>
+      <div class="ltask">1.2.4 Ввод антропометрических данных</div>
+      <span class="arr">→</span>
+      <div class="ltask">1.2.5 Выбор цели (похудение / набор / поддержание)</div>
+      <span class="arr">→</span>
+      <div class="ltask">1.2.6 Создание аккаунта, выдача JWT</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== БП-2 ДЕКОМПОЗИЦИЯ ===== -->
+<div class="decomp-wrapper">
+  <h3>БП-2: Распознавание еды — уровни декомпозиции</h3>
+
+  <div class="level-box">
+    <div class="level-title">Уровень 1</div>
+    <div class="level-flow">
+      <div class="event-start">●</div>
+      <span class="arr">→</span>
+      <div class="ltask">БП-2: Распознавание еды по фото</div>
+      <span class="arr">→</span>
+      <div class="event-end">●</div>
+    </div>
+  </div>
+
+  <div class="decomp-arrow">↓ декомпозиция</div>
+
+  <div class="level-box">
+    <div class="level-title">Уровень 2 — Основные подпроцессы</div>
+    <div class="level-flow">
+      <div class="ltask">2.1 Получение изображения</div>
+      <span class="arr">→</span>
+      <div class="ltask active">2.2 AI-анализ фотографии</div>
+      <span class="arr">→</span>
+      <div class="ltask">2.3 Представление результата пользователю</div>
+      <span class="arr">→</span>
+      <div class="ltask">2.4 Сохранение результата</div>
+    </div>
+  </div>
+
+  <div class="decomp-arrow">↓ декомпозиция 2.2</div>
+
+  <div class="level-box">
+    <div class="level-title">Уровень 3 — Детализация «AI-анализ фотографии»</div>
+    <div class="level-flow">
+      <div class="ltask">2.2.1 Предобработка изображения (resize, crop)</div>
+      <span class="arr">→</span>
+      <div class="ltask">2.2.2 Передача в Mistral Vision (OpenRouter API)</div>
+      <span class="arr">→</span>
+      <div class="ltask">2.2.3 Сегментация продуктов на фото</div>
+      <span class="arr">→</span>
+      <div class="ltask">2.2.4 Оценка веса порций</div>
+      <span class="arr">→</span>
+      <div class="ltask">2.2.5 Поиск КБЖУ в нутриентной БД</div>
+      <span class="arr">→</span>
+      <div class="ltask">2.2.6 Формирование JSON-ответа</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== БП-3 ДЕКОМПОЗИЦИЯ ===== -->
+<div class="decomp-wrapper">
+  <h3>БП-3: Ведение дневника — уровни декомпозиции</h3>
+
+  <div class="level-box">
+    <div class="level-title">Уровень 1</div>
+    <div class="level-flow">
+      <div class="event-start">●</div>
+      <span class="arr">→</span>
+      <div class="ltask">БП-3: Ведение дневника питания</div>
+      <span class="arr">→</span>
+      <div class="event-end">●</div>
+    </div>
+  </div>
+
+  <div class="decomp-arrow">↓ декомпозиция</div>
+
+  <div class="level-box">
+    <div class="level-title">Уровень 2 — Основные подпроцессы</div>
+    <div class="level-flow">
+      <div class="ltask">3.1 Просмотр дневника за день</div>
+      <span class="arr">→</span>
+      <div class="ltask active">3.2 Добавление записи</div>
+      <span class="arr">→</span>
+      <div class="ltask">3.3 Редактирование / удаление записи</div>
+      <span class="arr">→</span>
+      <div class="ltask">3.4 Синхронизация с облаком</div>
+    </div>
+  </div>
+
+  <div class="decomp-arrow">↓ декомпозиция 3.2</div>
+
+  <div class="level-box">
+    <div class="level-title">Уровень 3 — Детализация «Добавление записи»</div>
+    <div class="level-flow">
+      <div class="ltask">3.2.1 Выбор типа приема пищи (завтрак/обед/ужин/перекус)</div>
+      <span class="arr">→</span>
+      <div class="ltask">3.2.2 Добавление блюда (через БП-2 или поиск)</div>
+      <span class="arr">→</span>
+      <div class="ltask">3.2.3 Указание веса порции вручную (при необходимости)</div>
+      <span class="arr">→</span>
+      <div class="ltask">3.2.4 Подтверждение и запись в SQLite</div>
+      <span class="arr">→</span>
+      <div class="ltask">3.2.5 Пересчёт суточного баланса КБЖУ</div>
+    </div>
+  </div>
+</div>
+
+<p style="text-align:center; font-size:11px; color:#999; margin-top:20px">
+  FRUktik — мобильное приложение учёта питания • ВКР 2025 • Диаграммы составлены по методологии BPMN 2.0
+</p>
+</body>
+</html>
